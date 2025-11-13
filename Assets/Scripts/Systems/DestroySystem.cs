@@ -1,0 +1,15 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using System;
+using UnityEngine.Events;
+
+public class DestroySystem : MonoBehaviour
+{    public UnityEvent OnDestroy;
+
+    public void DestroyObj()
+    {
+        OnDestroy.Invoke();
+        Destroy(this.gameObject);
+    }
+}
