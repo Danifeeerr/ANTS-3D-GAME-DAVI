@@ -1,14 +1,16 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerController : MonoBehaviour
+
+public class PersonController : MonoBehaviour
 {
     //private vaeriables
     private Rigidbody _rb;
     private MovementSystem _mv;
+    private Vector3 _moveValue;
     private bool moving;
     private InputSystem_Actions _inputSA;
-    private Vector3 _moveValue;
+    private GameObject leader = null;
     //public variables
     public Animator animator;
     public float lateralSpeed = 5f;
@@ -23,7 +25,10 @@ public class PlayerController : MonoBehaviour
         _inputSA.Enable();
         _inputSA.Player.Move.performed += OnMove;
         _inputSA.Player.Move.canceled += OnStop;
-        startMovement();
+
+        EventController.StopMovement += stopMovement;
+        EventController.ObstacleTouched += Die;
+        GetComponent<CollisionSystem>().ActTriggered += addFollow;
     }
 
     // Update is called once per frame
@@ -41,7 +46,6 @@ public class PlayerController : MonoBehaviour
             }
         }
     }
-
     private void OnMove(InputAction.CallbackContext c)
     {
         _moveValue = new Vector3(c.ReadValue<Vector2>().x, 0, _moveValue.z);
@@ -60,6 +64,7 @@ public class PlayerController : MonoBehaviour
             _mv.MoveLateral(_moveValue, lateralSpeed);
         }
     }
+
     
     public void startMovement()
     {
@@ -77,17 +82,33 @@ public class PlayerController : MonoBehaviour
         {
             moving = false;
             _mv.PauseMovement();
-            EventController.StopMovementEvent();
-            float participants = GetComponent<FormationController>().getParticipants();
-            if (participants > 7)
-            {
-                animator.SetInteger("state", 2);
-            }
-            else
-            {
-                animator.SetInteger("state", 3);
-            }
         }
     }
-    
+
+    public void addFollow(GameObject other)
+    {
+        leader = other;
+        FormationController fc = leader.GetComponent<FormationController>();
+        fc.AddFollower(transform);
+
+        GetComponent<CollisionSystem>().ActTriggered -= addFollow;
+
+
+        GetComponent<Collider>().isTrigger = false;
+    }
+
+    public void Die(GameObject ant)
+    {
+        if (ant == this.gameObject)
+        {
+            FormationController fc = leader.GetComponent<FormationController>();
+            EventController.StopMovement -= stopMovement;
+            EventController.ObstacleTouched -= Die;
+            _inputSA.Player.Move.performed -= OnMove;
+            _inputSA.Player.Move.canceled -= OnStop;
+            fc.RemoveFollower(transform);
+            Destroy(this.gameObject);
+        }
+
+    }
 }

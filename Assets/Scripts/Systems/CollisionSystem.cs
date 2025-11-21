@@ -1,12 +1,16 @@
 using UnityEngine;
 using UnityEngine.Events;
+using System;
 
 
 public class CollisionSystem : MonoBehaviour
 {
-    public UnityEvent<GameObject, GameObject> Collided;
-    public UnityEvent<GameObject, GameObject> Triggered;
-    public UnityEvent<GameObject, GameObject> CollidedExit;
+    public UnityEvent<GameObject> Collided;
+    public UnityEvent<GameObject> Triggered;
+    public UnityEvent<GameObject> CollidedExit;
+    public event Action<GameObject> ActTriggered;
+    public event Action<GameObject> ActCollided;
+
 
     private GameObject myself;
 
@@ -17,16 +21,18 @@ public class CollisionSystem : MonoBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
-        Collided.Invoke(myself, collision.gameObject);
+        Collided?.Invoke(collision.gameObject);
+        ActCollided?.Invoke(collision.gameObject);
     }
 
     void OnTriggerEnter(Collider other)
     {
-        Triggered.Invoke(myself, other.gameObject);
+        Triggered?.Invoke(other.gameObject);
+        ActTriggered?.Invoke(other.gameObject);
     }
 
     void OnCollisionExit(Collision collision)
     {
-        CollidedExit.Invoke(myself, collision.gameObject);
+        CollidedExit?.Invoke(collision.gameObject);
     }
 }

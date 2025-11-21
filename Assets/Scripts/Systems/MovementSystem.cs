@@ -22,8 +22,6 @@ public class MovementSystem : MonoBehaviour
     {
         if (_rb != null)
         {
-            Debug.Log("Moving Forward");
-
             _rb.linearVelocity = direc * speed;
         }
     }
@@ -37,6 +35,15 @@ public class MovementSystem : MonoBehaviour
             _rb.linearVelocity = direc * speed;
         }
 
+    }
+
+    public void MoveLateral(Vector3 direc, float s)
+    {
+        if (_rb != null)
+        {
+            Vector3 lateralVelocity = new Vector3(direc.x * s, _rb.linearVelocity.y, _rb.linearVelocity.z);
+            _rb.linearVelocity = lateralVelocity;
+        }
     }
 
 
