@@ -12,7 +12,7 @@ public class PlayerController : MonoBehaviour
     //public variables
     public Animator animator;
     public float lateralSpeed = 5f;
-    void Start()
+    void OnEnable()
     {
         TryGetComponent<Rigidbody>(out _rb);
         TryGetComponent<MovementSystem>(out _mv);
@@ -23,7 +23,13 @@ public class PlayerController : MonoBehaviour
         _inputSA.Enable();
         _inputSA.Player.Move.performed += OnMove;
         _inputSA.Player.Move.canceled += OnStop;
-        startMovement();
+    }
+
+    void OnDisable()
+    {
+        _inputSA.Player.Move.performed -= OnMove;
+        _inputSA.Player.Move.canceled -= OnStop;
+        _inputSA.Disable();
     }
 
     // Update is called once per frame
@@ -82,10 +88,12 @@ public class PlayerController : MonoBehaviour
             if (participants > 7)
             {
                 animator.SetInteger("state", 2);
+                EventController.MatchWonEvent();
             }
             else
             {
                 animator.SetInteger("state", 3);
+                EventController.MatchLostEvent();
             }
         }
     }

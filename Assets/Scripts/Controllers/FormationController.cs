@@ -15,6 +15,7 @@ public class FormationController : MonoBehaviour
         UpdateFormation();
     }
 
+
     void UpdateFormation()
     {
         for (int i = 0; i < followers.Count; i++)
@@ -25,24 +26,25 @@ public class FormationController : MonoBehaviour
             Vector3 offset = (-transform.forward * (row + 1) * spacingZ) + (transform.right * (column - (columns-1)/2f) * spacingX);
 
             Vector3 targetPos = transform.position + offset;
+        
             followers[i].position = Vector3.Lerp(
                 followers[i].position,
                 targetPos,
                 Time.deltaTime * smooth
             );
-            //followers[i].position = targetPos;
         }
     }
 
     public void AddFollower(Transform f)
     {
         followers.Add(f);
-        Debug.Log("Total followers: " + followers.Count);
+        EventController.FollowersUpdateEvent(followers.Count);
     }
 
     public void RemoveFollower(Transform f)
     {
         followers.Remove(f);
+        EventController.FollowersUpdateEvent(followers.Count);
     }
 
     public float getParticipants()

@@ -14,7 +14,7 @@ public class PersonController : MonoBehaviour
     //public variables
     public Animator animator;
     public float lateralSpeed = 5f;
-    void Start()
+    void OnEnable()
     {
         TryGetComponent<Rigidbody>(out _rb);
         TryGetComponent<MovementSystem>(out _mv);
@@ -28,7 +28,21 @@ public class PersonController : MonoBehaviour
 
         EventController.StopMovement += stopMovement;
         EventController.ObstacleTouched += Die;
+        EventController.MatchWon += WeWon;
+        EventController.MatchLost += WeLost;
         GetComponent<CollisionSystem>().ActTriggered += addFollow;
+    }
+
+    void OnDisable()
+    {
+        EventController.StopMovement -= stopMovement;
+        EventController.ObstacleTouched -= Die;
+        _inputSA.Player.Move.performed -= OnMove;
+        _inputSA.Player.Move.canceled -= OnStop;
+        EventController.MatchWon -= WeWon;
+        EventController.MatchLost -= WeLost;
+        _inputSA.Disable();
+        GetComponent<CollisionSystem>().ActTriggered -= addFollow;
     }
 
     // Update is called once per frame
@@ -106,9 +120,21 @@ public class PersonController : MonoBehaviour
             EventController.ObstacleTouched -= Die;
             _inputSA.Player.Move.performed -= OnMove;
             _inputSA.Player.Move.canceled -= OnStop;
+            EventController.MatchWon -= WeWon;
+            EventController.MatchLost -= WeLost;
+            _inputSA.Disable();
             fc.RemoveFollower(transform);
             Destroy(this.gameObject);
         }
 
+    }
+
+    public void WeWon()
+    {
+        animator.SetInteger("state", 2);
+    }
+    public void WeLost()
+    {
+        animator.SetInteger("state", 3);
     }
 }
