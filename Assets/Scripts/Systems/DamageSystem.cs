@@ -6,8 +6,28 @@ public class DamageSystem : MonoBehaviour
 {
     public float damage = 1.0f;
 
-    public void DoDamage(GameObject other, GameObject myself){
-        if (other.TryGetComponent<HealthSystem>(out HealthSystem hs) && myself == this.gameObject)
+    private void OnEnable()
+    {
+        this.TryGetComponent<CollisionSystem>(out CollisionSystem cs);
+        if (cs != null)
+        {
+            cs.ActCollided += DoDamage;
+            cs.ActTriggered += DoDamage;
+        }
+    }
+
+    private void OnDisable()
+    {
+        this.TryGetComponent<CollisionSystem>(out CollisionSystem cs);
+        if (cs != null)
+        {
+            cs.ActCollided -= DoDamage;
+            cs.ActTriggered -= DoDamage;
+        }
+    }
+
+    public void DoDamage(GameObject other){
+        if (other.TryGetComponent<HealthSystem>(out HealthSystem hs))
         {
             hs.Hurt(damage);
         }

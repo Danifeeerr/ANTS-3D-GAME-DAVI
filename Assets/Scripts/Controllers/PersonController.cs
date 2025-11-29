@@ -27,7 +27,6 @@ public class PersonController : MonoBehaviour
         _inputSA.Player.Move.canceled += OnStop;
 
         EventController.StopMovement += stopMovement;
-        EventController.ObstacleTouched += Die;
         EventController.MatchWon += WeWon;
         EventController.MatchLost += WeLost;
         GetComponent<CollisionSystem>().ActTriggered += addFollow;
@@ -36,7 +35,6 @@ public class PersonController : MonoBehaviour
     void OnDisable()
     {
         EventController.StopMovement -= stopMovement;
-        EventController.ObstacleTouched -= Die;
         _inputSA.Player.Move.performed -= OnMove;
         _inputSA.Player.Move.canceled -= OnStop;
         EventController.MatchWon -= WeWon;
@@ -111,22 +109,17 @@ public class PersonController : MonoBehaviour
         GetComponent<Collider>().isTrigger = false;
     }
 
-    public void Die(GameObject ant)
+    public void Die()
     {
-        if (ant == this.gameObject)
-        {
-            FormationController fc = leader.GetComponent<FormationController>();
-            EventController.StopMovement -= stopMovement;
-            EventController.ObstacleTouched -= Die;
-            _inputSA.Player.Move.performed -= OnMove;
-            _inputSA.Player.Move.canceled -= OnStop;
-            EventController.MatchWon -= WeWon;
-            EventController.MatchLost -= WeLost;
-            _inputSA.Disable();
-            fc.RemoveFollower(transform);
-            Destroy(this.gameObject);
-        }
-
+        FormationController fc = leader.GetComponent<FormationController>();
+        EventController.StopMovement -= stopMovement;
+        _inputSA.Player.Move.performed -= OnMove;
+        _inputSA.Player.Move.canceled -= OnStop;
+        EventController.MatchWon -= WeWon;
+        EventController.MatchLost -= WeLost;
+        _inputSA.Disable();
+        fc.RemoveFollower(transform);
+        this.GetComponent<DestroySystem>().DestroyObj();
     }
 
     public void WeWon()
