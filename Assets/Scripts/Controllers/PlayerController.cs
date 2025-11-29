@@ -12,6 +12,10 @@ public class PlayerController : MonoBehaviour
     //public variables
     public Animator animator;
     public float lateralSpeed = 5f;
+    public AudioClip initMusic;
+    public AudioClip inGameMusic;
+    public AudioClip winMusic;
+    public AudioClip loseMusic;
     void OnEnable()
     {
         TryGetComponent<Rigidbody>(out _rb);
@@ -23,6 +27,7 @@ public class PlayerController : MonoBehaviour
         _inputSA.Enable();
         _inputSA.Player.Move.performed += OnMove;
         _inputSA.Player.Move.canceled += OnStop;
+        AudioController.Instance.PlayMusic(initMusic);
     }
 
     void OnDisable()
@@ -75,6 +80,7 @@ public class PlayerController : MonoBehaviour
             _moveValue = new Vector3(0, 0, 1);
             _mv.Move(_moveValue);
         }
+        AudioController.Instance.PlayMusic(inGameMusic);
     }
     
     public void stopMovement()
@@ -89,11 +95,13 @@ public class PlayerController : MonoBehaviour
             {
                 animator.SetInteger("state", 2);
                 EventController.MatchWonEvent();
+                AudioController.Instance.PlayMusic(winMusic);
             }
             else
             {
                 animator.SetInteger("state", 3);
                 EventController.MatchLostEvent();
+                AudioController.Instance.PlayMusic(loseMusic);
             }
         }
     }

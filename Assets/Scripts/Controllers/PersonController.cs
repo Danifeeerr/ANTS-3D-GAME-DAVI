@@ -14,6 +14,8 @@ public class PersonController : MonoBehaviour
     //public variables
     public Animator animator;
     public float lateralSpeed = 5f;
+
+
     void OnEnable()
     {
         TryGetComponent<Rigidbody>(out _rb);

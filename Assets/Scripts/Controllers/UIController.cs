@@ -2,11 +2,14 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
 using UnityEditor;
+using UnityEngine.EventSystems;
 
 public class UIController : MonoBehaviour
 {
     public GameObject followersText;
     public GameObject restartButton;
+    public GameObject playbutton;
+    public GameObject optionsMenu;
 
     private void OnEnable()
     {
@@ -44,6 +47,7 @@ public class UIController : MonoBehaviour
     public void enableRestartButton()
     {
         restartButton.SetActive(true);
+        EventSystem.current.SetSelectedGameObject(restartButton);
     }
 
     public void followersUpdate(float count)
@@ -57,5 +61,17 @@ public class UIController : MonoBehaviour
         {
             followersText.GetComponent<TextMeshProUGUI>().color = Color.black;
         }
+    }
+
+    public void OptionMenu()
+    {
+        optionsMenu.SetActive(true);
+        EventSystem.current.SetSelectedGameObject(optionsMenu.transform.GetChild(0).gameObject);
+    }
+
+    public void CloseOptionMenu()
+    {
+        optionsMenu.SetActive(false);
+        EventSystem.current.SetSelectedGameObject(playbutton);
     }
 }
