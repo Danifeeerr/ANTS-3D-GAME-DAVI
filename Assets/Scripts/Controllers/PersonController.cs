@@ -14,6 +14,8 @@ public class PersonController : MonoBehaviour
     //public variables
     public Animator animator;
     public float lateralSpeed = 5f;
+    public AudioClip deathSFX;
+    public AudioClip addFollowerSFX;
 
 
     void OnEnable()
@@ -101,6 +103,7 @@ public class PersonController : MonoBehaviour
 
     public void addFollow(GameObject other)
     {
+        AudioController.Instance.PlaySFX(addFollowerSFX);
         leader = other;
         FormationController fc = leader.GetComponent<FormationController>();
         fc.AddFollower(transform);
@@ -113,6 +116,7 @@ public class PersonController : MonoBehaviour
 
     public void Die()
     {
+        AudioController.Instance.PlaySFX(deathSFX);
         FormationController fc = leader.GetComponent<FormationController>();
         EventController.StopMovement -= stopMovement;
         _inputSA.Player.Move.performed -= OnMove;
